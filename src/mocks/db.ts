@@ -3,8 +3,8 @@ import { subDays, subHours, subMinutes } from 'date-fns';
 
 export const mockUsers: User[] = [
   { id: 'u1', email: 'raman@test.com', name: 'Raman', avatar: '/avtaar.png' },
-  { id: 'u2', email: 'demo@test.com', name: 'Demo User', avatar: 'https://i.pravatar.cc/150?u=u2' },
-  { id: 'u3', email: 'sarah@test.com', name: 'Sarah', avatar: 'https://i.pravatar.cc/150?u=u3' }
+  { id: 'u2', email: 'demo@test.com', name: 'Demo User', avatar: '/avtaar.png' },
+  { id: 'u3', email: 'sarah@test.com', name: 'Sarah', avatar: '/avtaar.png' }
 ];
 
 export const mockWorkspaces: Workspace[] = [
