@@ -5,10 +5,21 @@ import { useWorkspaceStore } from '@/store/workspaceStore';
 import { WorkspaceSwitcher } from '@/features/workspaces/WorkspaceSwitcher';
 import { Loader2, LayoutDashboard, X, Layers } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useQueryClient } from '@tanstack/react-query';
+import { apiClient } from '@/services/api/client';
 
 export const Sidebar = ({ onClose }: { onClose?: () => void }) => {
   const selectedWorkspaceId = useWorkspaceStore(state => state.selectedWorkspaceId);
   const { data: boards, isLoading: isLoadingBoards } = useBoards(selectedWorkspaceId);
+  const queryClient = useQueryClient();
+
+  const handlePrefetchBoard = (boardId: string) => {
+    queryClient.prefetchQuery({
+      queryKey: ['tasks', boardId],
+      queryFn: () => apiClient(`/tasks?boardId=${boardId}`),
+      staleTime: 2 * 60 * 1000,
+    });
+  };
 
   return (
     <div className="flex h-full w-64 flex-col border-r border-border bg-card">
@@ -46,6 +57,7 @@ export const Sidebar = ({ onClose }: { onClose?: () => void }) => {
                   key={board.id}
                   to={`/board/${board.id}`}
                   onClick={onClose}
+                  onMouseEnter={() => handlePrefetchBoard(board.id)}
                   className={({ isActive }) =>
                     `flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${
                       isActive ? 'bg-secondary text-secondary-foreground shadow-sm' : 'text-muted-foreground'

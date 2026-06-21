@@ -25,6 +25,9 @@ export interface Task {
   status: string; // references Column ID
   priority: 'low' | 'medium' | 'high';
   assignee?: User;
+  storyPoints?: number;
+  labels?: string[];
+  dueDate?: string;
   createdAt: string;
   updatedAt: string;
 }

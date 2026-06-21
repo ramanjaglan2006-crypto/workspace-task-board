@@ -37,7 +37,20 @@ This scales better because it encapsulates everything related to a domain entity
 - **Mock Service Worker (MSW)** enables a clean separation of frontend and backend. When the actual API is ready, MSW can simply be turned off and the `apiClient` base URL swapped.
 - Zustand global stores are very small and decoupled. Adding a new theme store or preferences store won't cause unnecessary re-renders in unrelated components.
 
-## 8. Future Improvements
+## 8. Caching & Offline Support
+- **Advanced Caching**: React Query is configured with specific `staleTime` and `gcTime` limits tailored to the volatility of each entity type (e.g., tasks are volatile, workspaces are stable). This minimizes unnecessary requests.
+- **Persistence**: We use `@tanstack/react-query-persist-client` with `localStorage`. This allows the application to instantly render the last known state on refresh without waiting for the network.
+- **Offline Mode**: A custom `useOffline` hook detects `navigator.onLine` changes. A persistent offline banner notifies the user when they lose connection, seamlessly falling back to the persisted cache.
+
+## 9. Mock Service Worker (MSW) Expansion
+- The MSW handlers were expanded to provide complex, realistic mock data across multiple related entities (Workspaces -> Boards -> Tasks -> Activities).
+- Handlers are fully typed and simulate real backend behavior, properly handling optional fields (`storyPoints`, `dueDate`, `labels`) seamlessly.
+
+## 10. Performance & Prefetching
+- **Component Memoization**: Heavy components (`ColumnComponent`, `TaskCard`) are wrapped in `React.memo` to prevent unnecessary re-renders during drag operations. Event handlers (`handleTaskClick`) are stabilized with `useCallback`.
+- **Prefetching**: Data is prefetched preemptively on hover (in the Sidebar) and on Workspace Switch (dropdown) to eliminate loading spinners entirely when navigating the application.
+
+## 11. Future Improvements
 - **Undo Task Move**: Since React Query manages state, an optimistic update could save the previous state Snapshot to allow "undoing".
 - **Pagination/Infinite Scroll**: The Activity Feed could implement `useInfiniteQuery` to support loading more history.
 - **Dark Mode**: Add a `next-themes` provider and a toggle button to utilize the Tailwind dark class variants already defined in `index.css`.

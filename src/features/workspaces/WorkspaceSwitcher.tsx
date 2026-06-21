@@ -2,16 +2,43 @@ import React, { useEffect } from 'react';
 import { useWorkspaces } from '@/hooks/queries';
 import { useWorkspaceStore } from '@/store/workspaceStore';
 import { Loader2, ChevronsUpDown } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
+import { apiClient } from '@/services/api/client';
+import type { Board } from '@/types';
 
 export const WorkspaceSwitcher = () => {
   const { data: workspaces, isLoading } = useWorkspaces();
   const { selectedWorkspaceId, setWorkspaceId } = useWorkspaceStore();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (workspaces && workspaces.length > 0 && !selectedWorkspaceId) {
       setWorkspaceId(workspaces[0].id);
     }
   }, [workspaces, selectedWorkspaceId, setWorkspaceId]);
+
+  const handleWorkspaceChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newWorkspaceId = e.target.value;
+    setWorkspaceId(newWorkspaceId);
+
+    // Prefetch boards for the new workspace
+    await queryClient.prefetchQuery({
+      queryKey: ['boards', newWorkspaceId],
+      queryFn: () => apiClient<Board[]>(`/boards?workspaceId=${newWorkspaceId}`),
+      staleTime: 5 * 60 * 1000,
+    });
+
+    // Prefetch tasks for the first board
+    const boards = queryClient.getQueryData<Board[]>(['boards', newWorkspaceId]);
+    if (boards && boards.length > 0) {
+      const firstBoardId = boards[0].id;
+      queryClient.prefetchQuery({
+        queryKey: ['tasks', firstBoardId],
+        queryFn: () => apiClient(`/tasks?boardId=${firstBoardId}`),
+        staleTime: 2 * 60 * 1000,
+      });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -31,7 +58,7 @@ export const WorkspaceSwitcher = () => {
       <select
         className="absolute inset-0 w-full opacity-0 cursor-pointer"
         value={selectedWorkspaceId || ''}
-        onChange={(e) => setWorkspaceId(e.target.value)}
+        onChange={handleWorkspaceChange}
       >
         {workspaces?.map(w => (
           <option key={w.id} value={w.id}>{w.name}</option>

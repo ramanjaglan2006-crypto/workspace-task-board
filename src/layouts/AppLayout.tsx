@@ -4,10 +4,13 @@ import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { ActivityFeed } from '@/features/activity/ActivityFeed';
 import { cn } from '@/utils/cn';
+import { useOffline } from '@/hooks/useOffline';
+import { WifiOff } from 'lucide-react';
 
 export const AppLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activityOpen, setActivityOpen] = useState(true);
+  const isOffline = useOffline();
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background text-foreground">
@@ -19,6 +22,12 @@ export const AppLayout = () => {
       {/* Main Content */}
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header toggleSidebar={() => setSidebarOpen(!sidebarOpen)} toggleActivity={() => setActivityOpen(!activityOpen)} />
+        {isOffline && (
+          <div className="flex items-center justify-center gap-2 bg-destructive/90 px-4 py-2 text-sm font-medium text-destructive-foreground shadow-sm">
+            <WifiOff className="h-4 w-4" />
+            <span>You are offline. Showing cached data.</span>
+          </div>
+        )}
         <main className="flex-1 overflow-auto bg-muted/20">
           <Outlet />
         </main>

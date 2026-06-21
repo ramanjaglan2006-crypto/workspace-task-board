@@ -12,7 +12,7 @@ interface TaskCardProps {
   onClick: (task: Task) => void;
 }
 
-export const TaskCard = ({ task, onClick }: TaskCardProps) => {
+export const TaskCard = React.memo(({ task, onClick }: TaskCardProps) => {
   const {
     setNodeRef,
     attributes,
@@ -71,4 +71,4 @@ export const TaskCard = ({ task, onClick }: TaskCardProps) => {
       </Card>
     </div>
   );
-};
+});

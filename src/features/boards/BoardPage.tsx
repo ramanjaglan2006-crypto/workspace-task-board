@@ -113,17 +113,17 @@ export const BoardPage = () => {
     });
   }, [tasks, searchQuery, priorityFilter]);
 
-  const handleTaskClick = (task: Task) => {
+  const handleTaskClick = React.useCallback((task: Task) => {
     setEditingTask(task);
     setTargetColumnId(task.status);
     setIsModalOpen(true);
-  };
+  }, []);
 
-  const handleAddTask = (columnId: string) => {
+  const handleAddTask = React.useCallback((columnId: string) => {
     setEditingTask(null);
     setTargetColumnId(columnId);
     setIsModalOpen(true);
-  };
+  }, []);
 
   if (isLoadingBoard || isLoadingTasks) {
     return (

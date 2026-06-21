@@ -13,7 +13,7 @@ interface ColumnProps {
   onAddTask: (columnId: string) => void;
 }
 
-export const ColumnComponent = ({ column, tasks, onTaskClick, onAddTask }: ColumnProps) => {
+export const ColumnComponent = React.memo(({ column, tasks, onTaskClick, onAddTask }: ColumnProps) => {
   const taskIds = useMemo(() => tasks.map(t => t.id), [tasks]);
 
   const { setNodeRef, isOver } = useDroppable({
@@ -56,4 +56,4 @@ export const ColumnComponent = ({ column, tasks, onTaskClick, onAddTask }: Colum
       </div>
     </div>
   );
-};
+});
